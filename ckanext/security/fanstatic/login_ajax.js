@@ -1,6 +1,8 @@
-'use strict';
+
 
 (function ($) {
+    'use strict';
+    var sandbox = ckan.sandbox();
   var getLoginForm = function () {
     return $('#mfa-login-form')
   }
@@ -34,7 +36,7 @@
     buttons.prop('disabled', true)
 
     $.ajax({
-      url: '/api/mfa_login',
+      url: sandbox.url('/api/mfa_login'),
       method: 'POST',
       data: form.serialize(),
       success: function (loginState) {
