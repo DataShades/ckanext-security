@@ -30,7 +30,7 @@ def login():
 
 
 @login_required
-def configure_mfa(id=None):
+def configure_mfa(id: str):
     extra_vars = utils.configure_mfa(id)
     return tk.render('security/configure_mfa.html',
                      extra_vars={'c': extra_vars})

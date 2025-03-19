@@ -86,16 +86,15 @@ def _setup_totp_template_variables(context, data_dict):
         mfa_test_invalid
     """
     tc = _get_template_context()
-    gc = _get_global()
     form_data = _get_request_form_data(request)
 
-    tc.is_sysadmin = authz.is_sysadmin(gc.user)
+    tc.is_sysadmin = authz.is_sysadmin(tk.current_user.name)
     tc.totp_user_id = data_dict['id']
 
     user_dict = _fetch_user_or_fail(context, data_dict)
 
     tc.user_dict = user_dict
-    tc.is_myself = user_dict['name'] == gc.user
+    tc.is_myself = user_dict['name'] == tk.current_user.name
 
     totp_challenger = SecurityTOTP.get_for_user(user_dict['name'])
     if totp_challenger is not None:
@@ -188,18 +187,16 @@ def login():
         return (500, json.dumps({}))
 
 
-def configure_mfa(id=None):
+def configure_mfa(id: str):
     """Display the config of the users MFA"""
-    gc = _get_global()
     context = {
-        'model': model, 'session': model.Session,
-        'user': gc.user, 'auth_user_obj': gc.userobj
+        'user': tk.current_user.name
     }
     # pylons includes the rest of the url in the param,
     # so we need to strip the /new suffix
     user_id = id.replace('/new', '')
 
-    data_dict = {'id': user_id, 'user_obj': gc.userobj}
+    data_dict = {'id': user_id, 'user_obj': tk.current_user}
     tc = _setup_totp_template_variables(context, data_dict)
 
     if request.method == 'POST':

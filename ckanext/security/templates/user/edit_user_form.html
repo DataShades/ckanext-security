@@ -9,7 +9,7 @@
 {% endif %}
 
 {% if h.security_enable_totp() %}
-  <fieldset>
+  <fieldset class="mb-3 mb-md-4">
     <legend>{{_('Two factor authentication')}}</legend>
     {% link_for _('Manage two factor authentication'), controller='mfa_user', action='configure_mfa', id=data.id, class_='btn btn-default pull-left', icon='cog' %}
   </fieldset>
