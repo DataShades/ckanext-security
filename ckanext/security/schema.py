@@ -6,7 +6,7 @@ from ckan.lib.navl.validators import ignore_missing, not_empty, ignore
 from ckan.logic.validators import (
     name_validator, user_name_validator, user_password_not_empty,
     user_passwords_match, ignore_not_sysadmin, user_about_validator,
-    user_both_passwords_entered
+    user_both_passwords_entered, strip_value
 )
 from ckanext.security.validators import (
     user_password_validator, old_username_validator, ensure_str
@@ -21,7 +21,7 @@ from ckanext.security.validators import (
 def default_user_schema():
     schema = {
         'id': [ignore_missing, ensure_str],
-        'name': [not_empty, name_validator, user_name_validator,
+        'name': [not_empty, strip_value, name_validator, user_name_validator,
                  ensure_str],
         'fullname': [ignore_missing, ensure_str],
         'password': [user_password_validator,
