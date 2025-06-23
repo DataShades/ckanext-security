@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from __future__ import print_function
+import calendar
 import datetime
 import logging
 import pyotp
@@ -99,12 +100,15 @@ class SecurityTOTP(DomainObject):
         result = totp.verify(code, valid_window=1)
         if result and not verify_only:
             # check for replay attack...
-            if self.last_successful_challenge\
-                    and totp.at(self.last_successful_challenge) == code:
-                raise ReplayAttackException(
-                    "the replay code has already been used")
+            if self.last_successful_challenge:
+                last_ts = calendar.timegm(self.last_successful_challenge.utctimetuple())
+                if totp.at(last_ts) == code:
+                    raise ReplayAttackException("the replay code has already been used")
 
-            self.last_successful_challenge = datetime.datetime.utcnow()
+            self.last_successful_challenge = datetime.datetime.now(
+                datetime.timezone.utc
+            ).replace(tzinfo=None)
+
             self.save()
         else:
             log.debug("Failed to verify the totp code")
