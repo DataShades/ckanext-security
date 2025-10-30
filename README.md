@@ -70,6 +70,10 @@ This is performed using the `mimetypes` and `python-magic` libraries.
 * `ckanext.security.upload_blacklist: ['.png', 'image/jpg']` blocks any files with the given extensions or mime types.
 * `ckanext.security.extended_upload_mimetypes: { 'image/jpeg': '.jpg' }` adds mimetypes to extension mappings to the `mimetypes` python library. This improves file type checking in instances where the filename has no extension or the extension is not correct for the file type.
 
+**Define allowed resource file extensions**:
+* `ckanext.security.allowed_extensions: sav png` set the resource extensions which won't be validated using resource upload validation. 
+
+
 **Debugging**:
 
 If you are trying to configure a file type and it doesn't seem to be getting blocked (mostly this could happen if the file had the extension removed or changed),

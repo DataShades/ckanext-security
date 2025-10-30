@@ -1,4 +1,6 @@
 import logging
+import os
+from typing import Any
 import ckan.plugins as p
 
 from ckanext.security import schema as ext_schema
@@ -14,6 +16,8 @@ from ckanext.security.helpers import security_enable_totp
 from ckanext.security.plugin.flask_plugin import MixinPlugin
 
 log = logging.getLogger(__name__)
+
+ALLOWED_EXTENSIONS = tk.aslist(tk.config.get("ckanext.security.allowed_extensions", ""))
 
 
 class CkanSecurityPlugin(MixinPlugin, p.SingletonPlugin):
@@ -48,19 +52,27 @@ class CkanSecurityPlugin(MixinPlugin, p.SingletonPlugin):
 
     # BEGIN Hooks for IResourceController
 
+    def _validate_resource_file(self, resource: dict[str, Any]) -> None:
+        """Helper method to validate resource file extension."""
+        file_storage = resource.get('upload')
+        filename = file_storage.filename if file_storage else resource.get('url')
+        _, file_extension = os.path.splitext(filename)
+        if file_extension.lstrip(".") not in ALLOWED_EXTENSIONS:
+            validate_upload(resource)
+
     # CKAN < 2.10
     def before_create(self, context, resource):
-        validate_upload(resource)
+        self._validate_resource_file(resource)
 
     def before_update(self, context, current, resource):
-        validate_upload(resource)
+        self._validate_resource_file(resource)
 
     # CKAN >= 2.10
     def before_resource_create(self, context, resource):
-        validate_upload(resource)
+        self._validate_resource_file(resource)
 
     def before_resource_update(self, context, current, resource):
-        validate_upload(resource)
+        self._validate_resource_file(resource)
 
     # END Hooks for IResourceController
 
